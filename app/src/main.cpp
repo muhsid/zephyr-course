@@ -2,7 +2,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 
-#define SLEEP_TIME_MS 1000
+
 
 /* The devicetree node identifier for the "led0" alias. */
 #define LED_NODE DT_ALIAS(led0)
@@ -13,18 +13,40 @@ LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
 int main(void)
 {
+#ifdef CONFIG_LED_SUBSYSTEM
     bool led_state = true;
 
     if (!gpio_is_ready_dt(&led)) return 0;
 
     if (gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE) < 0) return 0;
+#ifdef CONFIG_LED_ADVANCED
+    LOG_INF("Brightness: %d%%, fade: %d ms",
+            CONFIG_LED_BRIGHTNESS, CONFIG_LED_FADE_DURATION_MS);
+#endif
+static const int pattern[] = {100, 100, 100, 600};
+size_t step = 0;
 
     while (1) {
         if (gpio_pin_toggle_dt(&led) < 0) return 0;
 
         led_state = !led_state;
-        LOG_INF("LED state: %s", led_state ? "ON" : "OFF");
-        k_msleep(SLEEP_TIME_MS);
+        if (IS_ENABLED(CONFIG_LED_DEBUG)) {
+    		LOG_INF("LED state: %s", led_state ? "ON" : "OFF");
+		}
+
+        if (IS_ENABLED(CONFIG_LED_CUSTOM_PATTERN)) {
+    		k_msleep(pattern[step]);
+    		step = (step + 1) % ARRAY_SIZE(pattern);
+		} 
+		else {
+    		k_msleep(CONFIG_BLINK_SLEEP_TIME_MS);
+		}
+
     }
-    return 0;
+#else
+    LOG_INF("LED Subsystem is disabled");
+#endif
+
+	return 0;
+
 }
