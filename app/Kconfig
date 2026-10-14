@@ -5,7 +5,7 @@ menuconfig LED_SUBSYSTEM
 config APP_HEARTBEAT_PERIOD_MS
 	int "App heartbeat period (ms)"
 	default 500
-	range 100 60000
+	range 100 2000
 	depends on LED_SUBSYSTEM
 	help
 	  How long the application heartbeat period should be, in milliseconds.
