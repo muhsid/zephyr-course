@@ -1,0 +1,6 @@
+board:
+  name: scratch_board
+  full_name: scratch_board_test
+  vendor: irtiza
+  socs:
+  - name: mcxn236
