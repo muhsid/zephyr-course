@@ -1,0 +1,6 @@
+board:
+  name: copy_rename_board
+  full_name: copy_rename_board_test
+  vendor: irtiza
+  socs:
+  - name: mcxn236
